@@ -1,15 +1,49 @@
 #if defined(__APPLE__)
 #include "SDL2/SDL.h"
+#include "SDL2_image/SDL_image.h"
 #endif
 
 #if defined(_WIN32) || (_WIN64)
 #include "SDL.h"
+#include "SDL_image.h"
 #endif
 
 #include <stdio.h>
 #include <iostream>
+#include <vector>
+#include <time.h>
 
 using namespace std;
+
+//source file declarations
+#if defined(__APPLE__)
+
+string currentWorkingDirectory(getcwd(NULL,0));
+
+string images_dir = currentWorkingDirectory +"/images/";
+
+string audio_dir = currentWorkingDirectory + "/audio/";
+#endif
+
+#if defined(_WIN32) || (_WIN64)
+
+
+string s_cwd(getcwd(NULL, 0));
+
+//create a string linking to the mac's image folder
+string images_dir = s_cwd + "\\images\\";
+
+string audio_dir = s_cwd + "\\audio\\";
+#endif
+
+bool quit,menu,game,win,lose;
+enum GameState {
+		MENU, GAME,WIN, LOSE
+	};
+
+GameState gameState = MENU;
+
+
 
 int main(int argc, char* argv[]) {
 
@@ -22,8 +56,8 @@ int main(int argc, char* argv[]) {
         "An SDL2 window",                  // window title
         SDL_WINDOWPOS_UNDEFINED,           // initial x position
         SDL_WINDOWPOS_UNDEFINED,           // initial y position
-        640,                               // width, in pixels
-        480,                               // height, in pixels
+        1024,                               // width, in pixels
+        768,                               // height, in pixels
         SDL_WINDOW_OPENGL                  // flags - see below
     );
 
@@ -34,6 +68,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    SDL_Event event;
+
     SDL_Surface* screenSurface = NULL;
 
     screenSurface = SDL_GetWindowSurface(window);
@@ -43,8 +79,52 @@ int main(int argc, char* argv[]) {
     SDL_UpdateWindowSurface(window);
 
     // The window is open: could enter program loop here (see SDL_PollEvent())
+    while(!quit){
+    	switch(gameState){
+    	case MENU:
+    		menu = true;
 
-    SDL_Delay(3000);  // Pause execution for 3000 milliseconds, for example
+    		while(menu){
+
+    			if(SDL_PollEvent(&event)){
+    				if(event.type == SDL_QUIT){
+    					quit = true;
+    					menu = false;
+    					break;
+    				}
+    				switch(event.key.keysym.sym){
+    				case SDLK_p:
+    					quit = true;
+    					menu = false;
+    					break;
+    				}
+    			}
+    		}
+    		break;
+    	case GAME:
+    		game = true;
+    		while(game){
+    			if(SDL_PollEvent(&event)){
+					if(event.type == SDL_QUIT){
+						quit = true;
+						game = false;
+						break;
+					}
+					switch(event.key.keysym.sym){
+					case SDLK_p:
+						quit = true;
+						game = false;
+						break;
+					}
+				}
+    		}
+
+    		break;
+
+    	}
+    }
+    //end of loop while
+
 
     // Close and destroy the window
     SDL_DestroyWindow(window);
