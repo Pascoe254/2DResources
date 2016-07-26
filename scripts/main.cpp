@@ -104,6 +104,7 @@ int main(int argc, char* argv[]) {
     	case GAME:
     		game = true;
     		while(game){
+    			game = true;
     			if(SDL_PollEvent(&event)){
 					if(event.type == SDL_QUIT){
 						quit = true;
@@ -115,6 +116,11 @@ int main(int argc, char* argv[]) {
 						quit = true;
 						game = false;
 						break;
+					case SDLK_d:
+						quit = true;
+						game = false;
+						break;
+
 					}
 				}
     		}
