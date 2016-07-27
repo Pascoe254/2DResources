@@ -20,7 +20,7 @@ using namespace std;
 
 string currentWorkingDirectory(getcwd(NULL,0));
 
-string images_dir = currentWorkingDirectory +"/images/";
+string images_dir = currentWorkingDirectory +"/2DResources/images/";
 
 string audio_dir = currentWorkingDirectory + "/audio/";
 #endif
@@ -41,7 +41,7 @@ enum GameState {
 		MENU, GAME,WIN, LOSE
 	};
 
-GameState gameState = MENU;
+GameState gameState = GAME;
 
 
 
@@ -68,15 +68,42 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    SDL_Renderer* renderer = NULL;
+
+	//create the renderer
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+	//**********Create background image********
+	string BKGDpath = images_dir + "primary.png";
+
+	//create a SDL Surface to hold the background image
+	SDL_Surface *surface = IMG_Load(BKGDpath.c_str());
+
+	//create a SDL texture
+
+	SDL_Texture *bkgd1;
+
+	//place surface info into the texture background
+	bkgd1 = SDL_CreateTextureFromSurface(renderer, surface);
+
+	SDL_Rect bkgd1pos;
+	bkgd1pos.x = 0;
+	bkgd1pos.y = -768;
+	bkgd1pos.w = 3072;
+	bkgd1pos.h = 2314;
+
+
+
+
     SDL_Event event;
 
-    SDL_Surface* screenSurface = NULL;
+  //  SDL_Surface* screenSurface = NULL;
 
-    screenSurface = SDL_GetWindowSurface(window);
+    //screenSurface = SDL_GetWindowSurface(window);
 
-    SDL_FillRect(screenSurface, NULL, SDL_MapRGB( screenSurface->format,0,42,254));
+    //SDL_FillRect(screenSurface, NULL, SDL_MapRGB( screenSurface->format,0,42,254));
 
-    SDL_UpdateWindowSurface(window);
+    //SDL_UpdateWindowSurface(window);
 
     // The window is open: could enter program loop here (see SDL_PollEvent())
     while(!quit){
@@ -123,6 +150,16 @@ int main(int argc, char* argv[]) {
 
 					}
 				}
+
+
+    			SDL_RenderClear(renderer);
+
+				//draw the background
+				SDL_RenderCopy(renderer, bkgd1, NULL, &bkgd1pos);
+
+				SDL_RenderPresent(renderer);
+
+
     		}
 
     		break;
