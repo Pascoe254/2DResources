@@ -12,8 +12,13 @@
 #include <iostream>
 #include <vector>
 #include <time.h>
+#include "player.h"
 
 using namespace std;
+
+float deltaTime = 0.0;
+int thistime = 0;
+int lasttime = 0;
 
 //source file declarations
 #if defined(__APPLE__)
@@ -92,7 +97,7 @@ int main(int argc, char* argv[]) {
 	bkgd1pos.w = 3072;
 	bkgd1pos.h = 2314;
 
-
+	Player player1 = Player(renderer,images_dir,audio_dir,100,600);
 
 
     SDL_Event event;
@@ -120,8 +125,7 @@ int main(int argc, char* argv[]) {
     					break;
     				}
     				switch(event.key.keysym.sym){
-    				case SDLK_p:
-    					quit = true;
+    				case SDLK_d:
     					menu = false;
     					break;
     				}
@@ -132,6 +136,9 @@ int main(int argc, char* argv[]) {
     		game = true;
     		while(game){
     			game = true;
+    			thistime = SDL_GetTicks();
+				deltaTime = (float)(thistime - lasttime) / 1000;
+				lasttime = thistime;
     			if(SDL_PollEvent(&event)){
 					if(event.type == SDL_QUIT){
 						quit = true;
@@ -139,23 +146,24 @@ int main(int argc, char* argv[]) {
 						break;
 					}
 					switch(event.key.keysym.sym){
-					case SDLK_p:
-						quit = true;
-						game = false;
-						break;
 					case SDLK_d:
-						quit = true;
-						game = false;
+						player1.moveright(deltaTime);
+						break;
+					case SDLK_a:
+						player1.moveleft(deltaTime);
 						break;
 
 					}
 				}
 
 
+
     			SDL_RenderClear(renderer);
 
 				//draw the background
 				SDL_RenderCopy(renderer, bkgd1, NULL, &bkgd1pos);
+
+				player1.Draw(renderer);
 
 				SDL_RenderPresent(renderer);
 

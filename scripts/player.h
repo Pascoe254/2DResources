@@ -23,4 +23,21 @@ using namespace std;
 class Player{
 public:
 
+
+	SDL_Rect posRect;
+	float speed, pos_X;
+	SDL_Texture * texture;
+
+
+	Player(SDL_Renderer *renderer, string imagePath, string audioPath, float x, float y);
+
+	void Update(float deltaTime);
+
+	void Draw(SDL_Renderer *renderer);
+
+	void moveright(float timedelta);
+
+	void moveleft(float timedelta);
+
+
 };
