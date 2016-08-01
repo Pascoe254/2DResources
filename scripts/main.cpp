@@ -8,11 +8,14 @@
 #include "SDL_image.h"
 #endif
 
+
 #include <stdio.h>
 #include <iostream>
 #include <vector>
 #include <time.h>
+#include <string.h>
 #include "player.h"
+#include "pickup.h"
 
 using namespace std;
 
@@ -20,8 +23,11 @@ float deltaTime = 0.0;
 int thistime = 0;
 int lasttime = 0;
 
+float x_pos = 0.0, y_pos = 0.0;
+
 //source file declarations
 #if defined(__APPLE__)
+
 
 string currentWorkingDirectory(getcwd(NULL,0));
 
@@ -31,14 +37,14 @@ string audio_dir = currentWorkingDirectory + "/audio/";
 #endif
 
 #if defined(_WIN32) || (_WIN64)
+#include <direct.h>
 
-
-string s_cwd(getcwd(NULL, 0));
+string s_cwd(_getcwd(NULL, 0));
 
 //create a string linking to the mac's image folder
-string images_dir = s_cwd + "\\images\\";
+string images_dir = s_cwd + "\\2DResources\\images\\";
 
-string audio_dir = s_cwd + "\\audio\\";
+string audio_dir = s_cwd + "\\2DResources\\audio\\";
 #endif
 
 bool quit,menu,game,win,lose;
@@ -54,7 +60,7 @@ int main(int argc, char* argv[]) {
 
     SDL_Window *window;                    // Declare a pointer
 
-    SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
+    SDL_Init(SDL_INIT_EVERYTHING);              // Initialize SDL2
 
     // Create an application window with the following settings:
     window = SDL_CreateWindow(
@@ -82,14 +88,21 @@ int main(int argc, char* argv[]) {
 	string BKGDpath = images_dir + "primary.png";
 
 	//create a SDL Surface to hold the background image
-	SDL_Surface *surface = IMG_Load(BKGDpath.c_str());
+	//SDL_Surface *surface = IMG_Load(BKGDpath.c_str());
 
 	//create a SDL texture
 
 	SDL_Texture *bkgd1;
 
 	//place surface info into the texture background
-	bkgd1 = SDL_CreateTextureFromSurface(renderer, surface);
+
+	bkgd1 = IMG_LoadTexture(renderer, BKGDpath.c_str());
+
+	if (bkgd1 == NULL)
+	{
+		
+		cout << "texture is blank";
+	}
 
 	SDL_Rect bkgd1pos;
 	bkgd1pos.x = 0;
@@ -98,8 +111,22 @@ int main(int argc, char* argv[]) {
 	bkgd1pos.h = 2314;
 
 	Player player1 = Player(renderer,images_dir,audio_dir,100,600);
+	Pickup orb1 = Pickup(renderer,1,images_dir,audio_dir,160,600);
+	Pickup orb2 = Pickup(renderer,1, images_dir, audio_dir, 230, 600);
+	Pickup orb3 = Pickup(renderer,1, images_dir, audio_dir, 300, 600);
 
+	SDL_Rect EnemyRect;
+	EnemyRect.x = 400;
+	EnemyRect.y = 600;
+	EnemyRect.w = 64;
+	EnemyRect.h = 64;
 
+	SDL_Texture * testenemy;
+
+	string enemypath = images_dir + "testenemy.png";
+
+	testenemy = IMG_LoadTexture(renderer, enemypath.c_str());
+	
     SDL_Event event;
 
   //  SDL_Surface* screenSurface = NULL;
@@ -112,6 +139,10 @@ int main(int argc, char* argv[]) {
 
     // The window is open: could enter program loop here (see SDL_PollEvent())
     while(!quit){
+
+		thistime = SDL_GetTicks();
+		deltaTime = (float)(thistime - lasttime) / 1000;
+		lasttime = thistime;
     	switch(gameState){
     	case MENU:
     		menu = true;
@@ -127,6 +158,7 @@ int main(int argc, char* argv[]) {
     				switch(event.key.keysym.sym){
     				case SDLK_d:
     					menu = false;
+						quit = true;
     					break;
     				}
     			}
@@ -136,9 +168,7 @@ int main(int argc, char* argv[]) {
     		game = true;
     		while(game){
     			game = true;
-    			thistime = SDL_GetTicks();
-				deltaTime = (float)(thistime - lasttime) / 1000;
-				lasttime = thistime;
+    			
     			if(SDL_PollEvent(&event)){
 					if(event.type == SDL_QUIT){
 						quit = true;
@@ -148,9 +178,43 @@ int main(int argc, char* argv[]) {
 					switch(event.key.keysym.sym){
 					case SDLK_d:
 						player1.moveright(deltaTime);
+						
 						break;
 					case SDLK_a:
 						player1.moveleft(deltaTime);
+						
+						break;
+
+
+					case SDLK_w:
+						player1.movebup = true;
+						y_pos = bkgd1pos.y;
+						y_pos += (player1.speed)*deltaTime;
+						bkgd1pos.y = (int)(y_pos + 0.5f);
+						if (bkgd1pos.y > 0) {
+							bkgd1pos.y = 0;
+							y_pos = 0;
+						}
+
+						player1.movebup = false;
+						break;
+					case SDLK_s:
+						player1.movebdown = true;
+						y_pos = bkgd1pos.y;
+						y_pos -= (player1.speed)*deltaTime;
+						bkgd1pos.y = (int)(y_pos + 0.5f);
+						if (bkgd1pos.y < -1536) {
+							bkgd1pos.y = -1536;
+							y_pos = -1536;
+						}
+
+						player1.movebdown = false;
+
+						break;
+					case SDLK_SPACE:
+     						player1.ammo();
+
+						
 						break;
 
 					}
@@ -160,10 +224,62 @@ int main(int argc, char* argv[]) {
 
     			SDL_RenderClear(renderer);
 
+				if (player1.posRect.x >= 800 - player1.posRect.w && player1.movebright) {
+					x_pos -= (player1.speed)*deltaTime;
+					bkgd1pos.x = (int)(x_pos + 0.5f);
+					player1.movebright = false;
+
+					if (bkgd1pos.x < -2048) {
+						bkgd1pos.x = -2048;
+						x_pos = -2048;
+					}
+				}
+
+				if (player1.posRect.x <= 100 && player1.movebleft) {
+					x_pos += (player1.speed)*deltaTime;
+					bkgd1pos.x = (int)(x_pos + 0.5f);
+					player1.movebleft = false;
+
+					if (bkgd1pos.x > 0) {
+						bkgd1pos.x = 0;
+						x_pos = 0;
+					}
+				}
+
+				if (SDL_HasIntersection(&player1.posRect, &orb1.pickupRect) && orb1.active) {
+					player1.orb1 = true;
+					orb1.active = false;
+				}
+
+				if (SDL_HasIntersection(&player1.posRect, &orb2.pickupRect) && orb2.active) {
+					player1.orb2 = true;
+					orb2.active = false;
+				}
+
+				if (SDL_HasIntersection(&player1.posRect, &orb3.pickupRect) && orb3.active) {
+					player1.orb3 = true;
+					orb3.active = false;
+				}
+
+				if (SDL_HasIntersection(&player1.posRect, &EnemyRect)) {
+					player1.health();
+				}
+
+
 				//draw the background
 				SDL_RenderCopy(renderer, bkgd1, NULL, &bkgd1pos);
 
+				SDL_RenderCopy(renderer, testenemy, NULL, &EnemyRect);
+
 				player1.Draw(renderer);
+
+				player1.Update();
+
+				orb1.draw(renderer);
+				orb2.draw(renderer);
+				orb3.draw(renderer);
+
+				
 
 				SDL_RenderPresent(renderer);
 
