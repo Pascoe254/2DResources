@@ -2,7 +2,7 @@
 
 Player::Player(SDL_Renderer *renderer, string imagePath, string audioPath, float x, float y){
 	posRect.x = x;
-	posRect.y = y;
+	posRect.y = normaly = y;
 	posRect.w=101;
 	posRect.h=100;
 
@@ -38,12 +38,19 @@ Player::Player(SDL_Renderer *renderer, string imagePath, string audioPath, float
 	//pu1.h = pu2.h = pu3.h = 100;
 	firetime = hittime = 0;
 
-	speed = 80.0;
+	speed = 5.0;
 
 	pos_X = 0;
 	pos_Y = 0;
 
 	shoot = true;
+
+	playerjump = false;
+
+	jumpcount = 0;
+
+	jumppos = 0;
+
 
 	string playerPath = imagePath + "player.png";
 	texture = IMG_LoadTexture(renderer, playerPath.c_str());
@@ -73,10 +80,18 @@ Player::Player(SDL_Renderer *renderer, string imagePath, string audioPath, float
 	playerPath = imagePath + "pickup3.png";
 	backorbs3 = IMG_LoadTexture(renderer, playerPath.c_str());
 
+
 }
 
-void Player::Update(){
+void Player::Update(float deltatime){
 
+	if(movepleft){
+		moveleft(deltatime);
+	}
+
+	if(movepright){
+		moveright(deltatime);
+	}
 
 	if(posRect.x<100){
 			posRect.x=100;
@@ -90,6 +105,8 @@ void Player::Update(){
 		pos_X = posRect.x;
 		movebright = true;
 	}
+
+
 
 	
 
@@ -163,3 +180,46 @@ void Player::moveleft(float timedelta){
 	posRect.x = (int)(pos_X + .5f);
 
 }
+
+void Player::jump(){
+
+
+
+		jumppos = .02*(jumpcount * jumpcount) - 200;
+		pos_Y = normaly + jumppos;
+		posRect.y = (int)(pos_Y + 0.5f);
+		jumpcount+=1;
+
+		if(jumpcount>100){
+			playerjump = false;
+			jumpcount=0;
+
+
+		}
+
+		cout << jumppos << "- ";
+}
+
+void Player::release(SDL_Event event){
+	switch(event.key.keysym.sym){
+	case SDLK_a:
+		movepleft = false;
+		break;
+	case SDLK_d:
+		movepright=false;
+		break;
+	}
+
+}
+
+void Player::press(SDL_Event event){
+	switch(event.key.keysym.sym){
+		case SDLK_a:
+			movepleft = true;
+			break;
+		case SDLK_d:
+			movepright = true;
+			break;
+		}
+}
+

@@ -175,28 +175,24 @@ int main(int argc, char* argv[]) {
 						game = false;
 						break;
 					}
+
+					if(event.type == SDL_KEYUP){
+						player1.release(event);
+					}
+					if(event.type == SDL_KEYDOWN){
+						player1.press(event);
+					}
+
 					switch(event.key.keysym.sym){
-					case SDLK_d:
-						player1.moveright(deltaTime);
-						
-						break;
-					case SDLK_a:
-						player1.moveleft(deltaTime);
-						
-						break;
 
 
 					case SDLK_w:
-						player1.movebup = true;
-						y_pos = bkgd1pos.y;
-						y_pos += (player1.speed)*deltaTime;
-						bkgd1pos.y = (int)(y_pos + 0.5f);
-						if (bkgd1pos.y > 0) {
-							bkgd1pos.y = 0;
-							y_pos = 0;
+
+						if(!player1.playerjump){
+						player1.playerjump = true;
+						player1.jumpcount=-100;
 						}
 
-						player1.movebup = false;
 						break;
 					case SDLK_s:
 						player1.movebdown = true;
@@ -219,7 +215,6 @@ int main(int argc, char* argv[]) {
 
 					}
 				}
-
 
 
     			SDL_RenderClear(renderer);
@@ -273,11 +268,15 @@ int main(int argc, char* argv[]) {
 
 				player1.Draw(renderer);
 
-				player1.Update();
+				player1.Update(deltaTime);
 
 				orb1.draw(renderer);
 				orb2.draw(renderer);
 				orb3.draw(renderer);
+
+				if(player1.playerjump){
+					player1.jump();
+				}
 
 				
 

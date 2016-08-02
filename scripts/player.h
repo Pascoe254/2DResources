@@ -24,16 +24,16 @@ public:
 
 
 	SDL_Rect posRect, backH, midH, frontH , backa, fronta,puback,pu1,pu2,pu3;
-	float speed, pos_X,pos_Y,firetime,hittime;
+	float speed, pos_X,pos_Y,firetime,hittime,jumppos;
 	SDL_Texture * texture,*backhealth,*fronthealth,*backammo,*frontammo,*backorbs1, *backorbs2, *backorbs3,*frontorbs, *midhealth;
 
-	int damage, maxhealth, ammoused;
-	bool movebup, movebdown, movebleft, movebright, orb1, orb2, orb3,shoot,hit;
+	int damage, maxhealth, ammoused,jumpcount,normaly;
+	bool movebup, movebdown, movebleft, movebright, orb1, orb2, orb3,shoot,hit,playerjump,movepright,movepleft;
 
 
 	Player(SDL_Renderer *renderer, string imagePath, string audioPath, float x, float y);
 
-	void Update();
+	void Update(float timedelta);
 
 	void Draw(SDL_Renderer *renderer);
 
@@ -45,5 +45,9 @@ public:
 
 	void health();
 
+	void jump();
 
+	void release(SDL_Event event);
+
+	void press(SDL_Event event);
 };
