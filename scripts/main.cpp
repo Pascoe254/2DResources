@@ -110,6 +110,58 @@ int main(int argc, char* argv[]) {
 	bkgd1pos.w = 3072;
 	bkgd1pos.h = 2314;
 
+	string fallpath = images_dir + "test.png";
+
+
+	//create a SDL texture
+
+	SDL_Texture *fall;
+
+	//place surface info into the texture background
+
+	fall = IMG_LoadTexture(renderer, fallpath.c_str());
+
+
+	SDL_Rect fallpos;
+	fallpos.x = bkgd1pos.x + 800;
+	fallpos.y =  bkgd1pos.y + 1450;
+	fallpos.w = 120;
+	fallpos.h = 900;
+
+	SDL_Rect climbpos;
+	climbpos.x = bkgd1pos.x + 2150;
+	climbpos.y =  bkgd1pos.y + 800;
+	climbpos.w = 120;
+	climbpos.h = 2000;
+
+	string boundspath = images_dir + "bounds.png";
+	//create a SDL texture
+
+	SDL_Texture *bounds;
+
+	//place surface info into the texture background
+
+	bounds = IMG_LoadTexture(renderer, boundspath.c_str());
+
+
+	SDL_Rect boundspos1;
+	boundspos1.x = bkgd1pos.x;
+	boundspos1.y =  bkgd1pos.y + 1450;
+	boundspos1.w = 735;
+	boundspos1.h = 768;
+
+	SDL_Rect boundspos2;
+	boundspos2.x = bkgd1pos.x + 980;
+	boundspos2.y =  bkgd1pos.y + 768;
+	boundspos2.w = 1100;
+	boundspos2.h = 1200;
+
+	SDL_Rect boundspos3;
+	boundspos3.x = bkgd1pos.x + 2400;
+	boundspos3.y =  bkgd1pos.y + 768;
+	boundspos3.w = 1100;
+	boundspos3.h = 1200;
+
 	Player player1 = Player(renderer,images_dir,audio_dir,100,600);
 	Pickup orb1 = Pickup(renderer,1,images_dir,audio_dir,160,600);
 	Pickup orb2 = Pickup(renderer,1, images_dir, audio_dir, 230, 600);
@@ -228,6 +280,12 @@ int main(int argc, char* argv[]) {
 						bkgd1pos.x = -2048;
 						x_pos = -2048;
 					}
+
+					climbpos.x = bkgd1pos.x + 2150;
+					fallpos.x = bkgd1pos.x + 800;
+					boundspos1.x = bkgd1pos.x;
+					boundspos2.x = bkgd1pos.x+980;
+					boundspos3.x = bkgd1pos.x+2400;
 				}
 
 				if (player1.posRect.x <= 100 && player1.movebleft) {
@@ -239,6 +297,13 @@ int main(int argc, char* argv[]) {
 						bkgd1pos.x = 0;
 						x_pos = 0;
 					}
+
+					climbpos.x = bkgd1pos.x + 2150;
+					fallpos.x = bkgd1pos.x + 800;
+					boundspos1.x = bkgd1pos.x;
+					boundspos2.x = bkgd1pos.x+980;
+					boundspos3.x = bkgd1pos.x+2400;
+
 				}
 
 				if (SDL_HasIntersection(&player1.posRect, &orb1.pickupRect) && orb1.active) {
@@ -259,24 +324,104 @@ int main(int argc, char* argv[]) {
 				if (SDL_HasIntersection(&player1.posRect, &EnemyRect)) {
 					player1.health();
 				}
+				if (SDL_HasIntersection(&player1.posRect, &boundspos1)&& player1.posRect.y > boundspos1.y) {
+					player1.posRect.x=boundspos1.x+736;
+					player1.pos_X = player1.posRect.x;
+				}
+
+				if (SDL_HasIntersection(&player1.posRect, &boundspos2)&& player1.posRect.y + player1.posRect.h < boundspos2.y + boundspos2.h && player1.posRect.x < boundspos2.x) {
+					player1.posRect.x=boundspos2.x - player1.posRect.w;
+					player1.pos_X = player1.posRect.x;
+				}
+
+				if (SDL_HasIntersection(&player1.posRect, &boundspos2)&& player1.posRect.y + player1.posRect.h < boundspos2.y + boundspos2.h && player1.posRect.x > boundspos2.x) {
+					player1.posRect.x=boundspos2.x + boundspos2.w;
+					player1.pos_X = player1.posRect.x;
+				}
+
+				if (SDL_HasIntersection(&player1.posRect, &fallpos)) {
+					player1.movebdown = true;
+					player1.posRect.y = player1.normaly = 650;
+
+					boundspos1.y =  bkgd1pos.y + 1450;
+					boundspos2.y =  bkgd1pos.y + 500;
+					boundspos3.y = bkgd1pos.y+800;
+					climbpos.y = bkgd1pos.y + 1000;
+				}
+
+				if (SDL_HasIntersection(&player1.posRect, &climbpos)) {
+					player1.movebup = true;
+					player1.posRect.y = player1.normaly = 650;
+
+					boundspos1.y =  bkgd1pos.y + 1450;
+					boundspos2.y =  bkgd1pos.y + 500;
+					boundspos3.y = bkgd1pos.y+800;
+					climbpos.y = bkgd1pos.y + 1000;
+				}
+
+
+				if(player1.movebdown){
+				y_pos = bkgd1pos.y;
+				y_pos -= (player1.speed)*deltaTime;
+				bkgd1pos.y = (int)(y_pos + 0.5f);
+				if (bkgd1pos.y < -1536) {
+					bkgd1pos.y = -1536;
+					y_pos = -1536;
+					player1.movebdown = false;
+					}
+				}
+
+				if(player1.playerjump & !player1.movebup){
+					player1.jump();
+				}
+
+				if(player1.movebup && player1.climb){
+				y_pos = bkgd1pos.y;
+				y_pos += (player1.speed/2)*deltaTime;
+				bkgd1pos.y = (int)(y_pos + 0.5f);
+				if (bkgd1pos.y > 0) {
+					bkgd1pos.y = 0;
+					y_pos = 0;
+					player1.movebup = false;
+					player1.posRect.y = player1.normaly = 590;
+
+					}
+				}
+
+
+
+
+//				if (bkgd1pos.y == 0 && bkgd1pos.x != -2048) {
+//
+//					x_pos -= (player1.speed)*deltaTime;
+//					bkgd1pos.x = (int)(x_pos + 0.5f);
+//					if (bkgd1pos.x < -2048) {
+//						bkgd1pos.x = -2048;
+//						x_pos = -2048;
+//						player1.posRect.x=100;
+//						player1.pos_X = player1.posRect.x;
+//					}
+//   			}
+				player1.Update(deltaTime);
 
 
 				//draw the background
 				SDL_RenderCopy(renderer, bkgd1, NULL, &bkgd1pos);
 
 				SDL_RenderCopy(renderer, testenemy, NULL, &EnemyRect);
+				SDL_RenderCopy(renderer, fall, NULL, &climbpos);
+				//SDL_RenderCopy(renderer, bounds, NULL, &boundspos1);
+				SDL_RenderCopy(renderer, bounds, NULL, &boundspos3);
 
 				player1.Draw(renderer);
 
-				player1.Update(deltaTime);
+
 
 				orb1.draw(renderer);
 				orb2.draw(renderer);
 				orb3.draw(renderer);
 
-				if(player1.playerjump){
-					player1.jump();
-				}
+
 
 				
 

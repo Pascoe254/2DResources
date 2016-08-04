@@ -32,13 +32,15 @@ Player::Player(SDL_Renderer *renderer, string imagePath, string audioPath, float
 	puback.w = 100;
 	puback.h = 100;
 
+	climb = false;
+
 	//pu1.x = pu2.x = pu3.x = 900;
 	//pu1.y = pu2.y = pu3.y = 24;
 	//pu1.w = pu2.w = pu3.w = 100;
 	//pu1.h = pu2.h = pu3.h = 100;
 	firetime = hittime = 0;
 
-	speed = 5.0;
+	speed = 4.0;
 
 	pos_X = 0;
 	pos_Y = 0;
@@ -165,6 +167,8 @@ void Player::Draw(SDL_Renderer *renderer){
 	if (orb3) {
 		SDL_RenderCopy(renderer, backorbs3, NULL, &puback);
 	}
+
+	cout << posRect.x << "\n";
 }
 
 void Player::moveright(float timedelta){
@@ -197,7 +201,7 @@ void Player::jump(){
 
 		}
 
-		cout << jumppos << "- ";
+
 }
 
 void Player::release(SDL_Event event){
@@ -208,6 +212,9 @@ void Player::release(SDL_Event event){
 	case SDLK_d:
 		movepright=false;
 		break;
+	case SDLK_w:
+			climb=false;
+			break;
 	}
 
 }
@@ -219,6 +226,9 @@ void Player::press(SDL_Event event){
 			break;
 		case SDLK_d:
 			movepright = true;
+			break;
+		case SDLK_w:
+				climb = true;
 			break;
 		}
 }

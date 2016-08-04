@@ -28,7 +28,7 @@ public:
 	SDL_Texture * texture,*backhealth,*fronthealth,*backammo,*frontammo,*backorbs1, *backorbs2, *backorbs3,*frontorbs, *midhealth;
 
 	int damage, maxhealth, ammoused,jumpcount,normaly;
-	bool movebup, movebdown, movebleft, movebright, orb1, orb2, orb3,shoot,hit,playerjump,movepright,movepleft;
+	bool movebup, movebdown, movebleft, movebright, orb1, orb2, orb3,shoot,hit,playerjump,movepright,movepleft,climb;
 
 
 	Player(SDL_Renderer *renderer, string imagePath, string audioPath, float x, float y);
