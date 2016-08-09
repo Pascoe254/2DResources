@@ -3,8 +3,13 @@
 Player::Player(SDL_Renderer *renderer, string imagePath, string audioPath, float x, float y){
 	posRect.x = x;
 	posRect.y = normaly = y;
+<<<<<<< HEAD
 	posRect.w=90;
 	posRect.h=150;
+=======
+	posRect.w=101;
+	posRect.h=100;
+>>>>>>> origin/master
 
 	backH.x =  10;
 	backH.y =  20;
@@ -54,7 +59,11 @@ Player::Player(SDL_Renderer *renderer, string imagePath, string audioPath, float
 	jumppos = 0;
 
 
+<<<<<<< HEAD
 	string playerPath = imagePath + "player1.png";
+=======
+	string playerPath = imagePath + "player.png";
+>>>>>>> origin/master
 	texture = IMG_LoadTexture(renderer, playerPath.c_str());
 
 
@@ -82,6 +91,7 @@ Player::Player(SDL_Renderer *renderer, string imagePath, string audioPath, float
 	playerPath = imagePath + "pickup3.png";
 	backorbs3 = IMG_LoadTexture(renderer, playerPath.c_str());
 
+<<<<<<< HEAD
 	string bulletPath = imagePath + "turretbullet.png";
 
 	for (int i = 0; i<10; i++) {
@@ -90,6 +100,9 @@ Player::Player(SDL_Renderer *renderer, string imagePath, string audioPath, float
 
 		bulletList.push_back(tmpBullet);
 	}
+=======
+
+>>>>>>> origin/master
 }
 
 void Player::Update(float deltatime){
@@ -115,11 +128,15 @@ void Player::Update(float deltatime){
 		movebright = true;
 	}
 
+<<<<<<< HEAD
 	for (int i = 0; i<bulletList.size(); i++) {
 		if (bulletList[i].active) {
 			bulletList[i].Update(deltatime);
 		}
 	}
+=======
+
+>>>>>>> origin/master
 
 	
 
@@ -129,7 +146,10 @@ void Player::ammo() {
 	if (SDL_GetTicks() > firetime) {
 		firetime = SDL_GetTicks() + 1000;
 		shoot = true;
+<<<<<<< HEAD
 		
+=======
+>>>>>>> origin/master
 	}
 	if (shoot && ammoused < 100) {
 		ammoused += 5;
@@ -162,6 +182,7 @@ void Player::health() {
 	}
 }
 
+<<<<<<< HEAD
 void Player::turrethit() {
 
 	
@@ -178,6 +199,8 @@ void Player::turrethit() {
 	}
 }
 
+=======
+>>>>>>> origin/master
 void Player::Draw(SDL_Renderer *renderer){
 
 	SDL_RenderCopy(renderer,texture, NULL,&posRect);
@@ -195,11 +218,16 @@ void Player::Draw(SDL_Renderer *renderer){
 	if (orb3) {
 		SDL_RenderCopy(renderer, backorbs3, NULL, &puback);
 	}
+<<<<<<< HEAD
 	for (int i = 0; i<bulletList.size(); i++) {
 		if (bulletList[i].active) {
 			bulletList[i].Draw(renderer);
 		}
 	}
+=======
+
+	cout << posRect.x << "\n";
+>>>>>>> origin/master
 }
 
 void Player::moveright(float timedelta){
@@ -225,10 +253,21 @@ void Player::jump(){
 		posRect.y = (int)(pos_Y + 0.5f);
 		jumpcount+=1;
 
+<<<<<<< HEAD
 		if (jumpcount > 100) {
 			playerjump = false;
 			jumpcount = 0;
 		}
+=======
+		if(jumpcount>100){
+			playerjump = false;
+			jumpcount=0;
+
+
+		}
+
+
+>>>>>>> origin/master
 }
 
 void Player::release(SDL_Event event){
@@ -257,6 +296,7 @@ void Player::press(SDL_Event event){
 		case SDLK_w:
 				climb = true;
 			break;
+<<<<<<< HEAD
 		case SDLK_SPACE:
 			CreateBullet();
 			ammo();
@@ -286,3 +326,8 @@ void Player::CreateBullet() {
 		}
 	}
 }
+=======
+		}
+}
+
+>>>>>>> origin/master

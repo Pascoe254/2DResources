@@ -16,14 +16,20 @@
 #include<iostream>
 #include<sstream>
 #include<vector>
+<<<<<<< HEAD
 #include "playerbullet.h"
+=======
+>>>>>>> origin/master
 
 using namespace std;
 
 class Player{
 public:
 
+<<<<<<< HEAD
 	vector<PlayerBullet> bulletList;
+=======
+>>>>>>> origin/master
 
 	SDL_Rect posRect, backH, midH, frontH , backa, fronta,puback,pu1,pu2,pu3;
 	float speed, pos_X,pos_Y,firetime,hittime,jumppos;
@@ -52,8 +58,11 @@ public:
 	void release(SDL_Event event);
 
 	void press(SDL_Event event);
+<<<<<<< HEAD
 
 	void turrethit();
 
 	void CreateBullet();
+=======
+>>>>>>> origin/master
 };
